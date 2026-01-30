@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import AddAppointment from "./AddAppointment";
 import AddPrescription from "./AddPrescription";
 import AppointmentActions from "./AppointmentActions";
+import PrescriptionActions from "./PrescriptionActions";
 
 export default async function PatientDetailPage({
     params,
@@ -27,7 +28,7 @@ export default async function PatientDetailPage({
     if (!patient) notFound();
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen text-white bg-gradient-to-b from-[#0a0d16] via-[#0b0f1c] to-black bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.06),transparent_60%)]">
             {/* Top bar */}
             <header className="sticky top-0 z-10 border-b border-white/10 bg-black/30 backdrop-blur">
                 <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">

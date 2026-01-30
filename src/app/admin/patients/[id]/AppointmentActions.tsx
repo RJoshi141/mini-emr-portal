@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function AppointmentActions({
     id,
@@ -10,34 +11,44 @@ export default function AppointmentActions({
     repeat: string;
 }) {
     const router = useRouter();
+    const [busy, setBusy] = useState(false);
 
-    async function del() {
-        await fetch(`/api/admin/appointments?id=${id}`, { method: "DELETE" });
+    async function onDelete() {
+        if (!confirm("Delete this appointment?")) return;
+        setBusy(true);
+        await fetch(`/api/admin/appointments/${id}`, { method: "DELETE" });
         router.refresh();
+        setBusy(false);
     }
 
-    async function endRecurring() {
-        const today = new Date();
-        const ymd = today.toISOString().slice(0, 10); // YYYY-MM-DD
-        await fetch("/api/admin/appointments", {
+    async function onEndRecurring() {
+        // sets endsAt to now so your UI can show it as ended
+        setBusy(true);
+        await fetch(`/api/admin/appointments/${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id, endsAt: `${ymd}T23:59:59.999Z` }),
+            body: JSON.stringify({ endsAt: new Date().toISOString() }),
         });
         router.refresh();
+        setBusy(false);
     }
 
     return (
-        <div className="flex gap-3 items-center">
+        <div className="flex items-center gap-3 text-sm">
             {repeat !== "none" && (
                 <button
-                    onClick={endRecurring}
-                    className="text-yellow-300 underline hover:no-underline"
+                    disabled={busy}
+                    onClick={onEndRecurring}
+                    className="text-yellow-300 hover:text-yellow-200 disabled:opacity-50"
                 >
                     End recurring
                 </button>
             )}
-            <button onClick={del} className="text-red-300 underline hover:no-underline">
+            <button
+                disabled={busy}
+                onClick={onDelete}
+                className="text-red-300 hover:text-red-200 disabled:opacity-50"
+            >
                 Delete
             </button>
         </div>
