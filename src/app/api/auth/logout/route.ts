@@ -1,14 +1,22 @@
 import { NextResponse } from "next/server";
 import { clearSession } from "@/lib/auth";
 
-// If someone visits /api/auth/logout directly (GET), log them out and redirect home.
-export async function GET(req: Request) {
-    await clearSession();
+function redirectHome(req: Request) {
     return NextResponse.redirect(new URL("/", req.url));
 }
 
-// If UI calls it via fetch (POST), also log out and redirect home.
+export async function GET(req: Request) {
+    await clearSession();
+    return redirectHome(req);
+}
+
 export async function POST(req: Request) {
     await clearSession();
-    return NextResponse.redirect(new URL("/", req.url));
+    return redirectHome(req);
+}
+
+// Some clients/frameworks will hit HEAD implicitly
+export async function HEAD(req: Request) {
+    await clearSession();
+    return redirectHome(req);
 }
