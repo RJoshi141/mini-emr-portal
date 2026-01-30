@@ -1,68 +1,34 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import LoginForm from "./LoginForm";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    setLoading(false);
-
-    if (res.ok) {
-      router.push("/portal");
-    } else {
-      const data = await res.json().catch(() => ({}));
-      alert(data.error ?? "Invalid email or password");
-    }
-
-
-  }
-
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 p-6 space-y-4">
-        <h1 className="text-2xl font-bold">Patient Portal</h1>
-        <p className="text-white/70">Log in to view appointments and refills.</p>
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <div className="text-xs text-white/60 mb-3">Mini EMR + Patient Portal</div>
+          <h1 className="text-3xl font-semibold leading-tight">Your care, organized.</h1>
+          <p className="text-white/60 mt-3">
+            Log in to view upcoming appointments, refills, and patient info.
+          </p>
 
-        <form onSubmit={submit} className="space-y-3">
-          <input
-            className="w-full border p-3 rounded bg-black"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            className="w-full border p-3 rounded bg-black"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button
-            disabled={loading || !email || !password}
-            className="w-full border px-4 py-3 rounded hover:bg-white/10 disabled:opacity-50"
-          >
-            {loading ? "Logging in..." : "Log in"}
-          </button>
-        </form>
+          <p className="text-xs text-white/50 mt-6">
+            Admin EMR is at{" "}
+            <Link className="underline hover:text-white" href="/admin">
+              /admin
+            </Link>
+          </p>
+        </div>
 
-        <p className="text-xs text-white/60">
-          Admin EMR is at <span className="underline">/admin</span>
-        </p>
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <h2 className="text-2xl font-bold">Patient Portal</h2>
+          <p className="text-white/60 mt-1">Log in to continue.</p>
+
+          <div className="mt-5">
+            <LoginForm />
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
