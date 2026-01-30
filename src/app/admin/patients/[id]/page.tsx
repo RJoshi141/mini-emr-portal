@@ -140,7 +140,12 @@ export default async function PatientDetailPage({
 
                                                 {/* Your actions (delete + end recurring) */}
                                                 <div className="shrink-0">
-                                                    <AppointmentActions id={a.id} repeat={a.repeat} />
+                                                    <AppointmentActions
+                                                        id={a.id}
+                                                        repeat={a.repeat}
+                                                        provider={a.provider}
+                                                        startAtISO={a.startAt instanceof Date ? a.startAt.toISOString() : new Date(a.startAt).toISOString()}
+                                                    />
                                                 </div>
                                             </li>
                                         ))}
@@ -183,10 +188,16 @@ export default async function PatientDetailPage({
 
                                                 {/* If you have rx delete/edit actions, use them */}
                                                 <div className="shrink-0">
-                                                    {typeof PrescriptionActions === "function" ? (
-                                                        <PrescriptionActions id={rx.id} />
-                                                    ) : null}
+                                                    <PrescriptionActions
+                                                        id={rx.id}
+                                                        medication={rx.medication}
+                                                        dosage={rx.dosage}
+                                                        quantity={rx.quantity}
+                                                        refillDateISO={rx.refillDate.toISOString()}
+                                                        refillSchedule={rx.refillSchedule}
+                                                    />
                                                 </div>
+
                                             </li>
                                         ))}
                                     </ul>

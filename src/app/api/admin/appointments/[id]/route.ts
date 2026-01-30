@@ -8,26 +8,22 @@ export async function PATCH(
     const { id } = await Promise.resolve(params);
     const body = await req.json();
 
-    const provider = body.provider ? String(body.provider) : undefined;
-    const datetime = body.datetime ? new Date(String(body.datetime)) : undefined;
-    const repeat = body.repeat ? String(body.repeat) : undefined;
-    const endsAt =
-        body.endsAt === null ? null : body.endsAt ? new Date(String(body.endsAt)) : undefined;
+    const provider = typeof body.provider === "string" ? body.provider.trim() : undefined;
+    const datetime = typeof body.datetime === "string" ? body.datetime : undefined;
+    const repeat = typeof body.repeat === "string" ? body.repeat : undefined;
 
-    try {
-        const updated = await prisma.appointment.update({
-            where: { id },
-            data: {
-                ...(provider !== undefined ? { provider } : {}),
-                ...(datetime !== undefined ? { startAt: datetime } : {}),
-                ...(repeat !== undefined ? { repeat: repeat as any } : {}),
-                ...(endsAt !== undefined ? { endsAt } : {}),
-            },
-        });
-        return NextResponse.json(updated);
-    } catch {
-        return NextResponse.json({ error: "Appointment not found" }, { status: 404 });
-    }
+    // allow partial updates
+    const data: any = {};
+    if (provider) data.provider = provider;
+    if (datetime) data.startAt = new Date(datetime);
+    if (repeat) data.repeat = repeat;
+
+    const updated = await prisma.appointment.update({
+        where: { id },
+        data,
+    });
+
+    return NextResponse.json(updated);
 }
 
 export async function DELETE(
@@ -36,10 +32,6 @@ export async function DELETE(
 ) {
     const { id } = await Promise.resolve(params);
 
-    try {
-        await prisma.appointment.delete({ where: { id } });
-        return NextResponse.json({ ok: true });
-    } catch {
-        return NextResponse.json({ error: "Appointment not found" }, { status: 404 });
-    }
+    await prisma.appointment.delete({ where: { id } });
+    return NextResponse.json({ ok: true });
 }

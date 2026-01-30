@@ -8,29 +8,27 @@ export async function PATCH(
     const { id } = await Promise.resolve(params);
     const body = await req.json();
 
-    const medication = body.medication ? String(body.medication) : undefined;
-    const dosage = body.dosage ? String(body.dosage) : undefined;
+    const medication = typeof body.medication === "string" ? body.medication : undefined;
+    const dosage = typeof body.dosage === "string" ? body.dosage : undefined;
     const quantity =
-        body.quantity !== undefined && body.quantity !== null ? Number(body.quantity) : undefined;
-    const refillDate = body.refillDate ? new Date(String(body.refillDate)) : undefined;
-    const refillSchedule = body.refillSchedule ? String(body.refillSchedule) : undefined;
+        body.quantity === undefined ? undefined : Number(body.quantity);
+    const refillDate = typeof body.refillDate === "string" ? body.refillDate : undefined;
+    const refillSchedule =
+        typeof body.refillSchedule === "string" ? body.refillSchedule : undefined;
 
-    try {
-        const updated = await prisma.prescription.update({
-            where: { id },
-            data: {
-                ...(medication !== undefined ? { medication } : {}),
-                ...(dosage !== undefined ? { dosage } : {}),
-                ...(quantity !== undefined ? { quantity } : {}),
-                ...(refillDate !== undefined ? { refillDate } : {}),
-                ...(refillSchedule !== undefined ? { refillSchedule: refillSchedule as any } : {}),
-            },
-        });
+    const data: any = {};
+    if (medication) data.medication = medication;
+    if (dosage) data.dosage = dosage;
+    if (Number.isFinite(quantity)) data.quantity = quantity;
+    if (refillDate) data.refillDate = new Date(refillDate);
+    if (refillSchedule) data.refillSchedule = refillSchedule;
 
-        return NextResponse.json(updated);
-    } catch {
-        return NextResponse.json({ error: "Prescription not found" }, { status: 404 });
-    }
+    const updated = await prisma.prescription.update({
+        where: { id },
+        data,
+    });
+
+    return NextResponse.json(updated);
 }
 
 export async function DELETE(
@@ -39,10 +37,6 @@ export async function DELETE(
 ) {
     const { id } = await Promise.resolve(params);
 
-    try {
-        await prisma.prescription.delete({ where: { id } });
-        return NextResponse.json({ ok: true });
-    } catch {
-        return NextResponse.json({ error: "Prescription not found" }, { status: 404 });
-    }
+    await prisma.prescription.delete({ where: { id } });
+    return NextResponse.json({ ok: true });
 }
