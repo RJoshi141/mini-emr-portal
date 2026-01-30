@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getSessionPatientId } from "@/lib/auth";
-import LogoutButton from "./LogoutButton";
+import LogoutButton from "@/app/portal/LogoutButton";
 
 function withinNextDays(d: Date, days: number) {
     const now = new Date();
