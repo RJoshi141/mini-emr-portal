@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getSessionPatientId } from "@/lib/auth";
+import LogoutButton from "./LogoutButton";
 
 function withinNextDays(d: Date, days: number) {
     const now = new Date();
@@ -35,15 +36,8 @@ export default async function PortalPage() {
                     <p className="text-white/70">{patient.email}</p>
                 </div>
 
-                <form
-                    action="/api/auth/logout"
-                    method="post"
-                    className="inline"
-                >
-                    <button className="border px-4 py-2 rounded hover:bg-white/10">
-                        Log out
-                    </button>
-                </form>
+                <LogoutButton />
+
             </div>
 
             <section className="rounded-xl border border-white/10 p-6">
